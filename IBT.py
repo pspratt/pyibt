@@ -42,6 +42,10 @@ import matplotlib.pyplot as plt
 
 from pyibt.parse_IBT import parse_ibt
 
+# TODO(ken): Factor out interfaces for sweeps, analysis and plotting.
+# E.G. "cell" class that stores a list of identically formatted sweep objects. Sweeps
+# contain methods for analyzing / plotting that only need to know about single sweeps,
+# cells contain analysis/plotting methods that go across-sweep.
 class IBT:
 
     def __init__(self, ibt_File_Path):
