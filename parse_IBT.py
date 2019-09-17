@@ -84,7 +84,7 @@ def parse_ibt(ibt_File_Path):
 
         #follow the linked list through each of the Sweeps
         sweeps = [] #list that sweep dicts will go in
-        EOF = 0
+        EOF = False
         while not EOF:
             fb.seek(next_sweep_pointer) #go next sweep
             #check if we were sent to the right place
@@ -119,7 +119,7 @@ def parse_ibt(ibt_File_Path):
             next_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little')
             # previous_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little')
             if next_sweep_pointer == 0:
-                EOF = 1 # This is the final sweep in the linked list
+                EOF = True # This is the final sweep in the linked list
 
             fb.seek(sweep_data_pointer) #go to sweep data
             magic_number = int.from_bytes(fb.read(2),byteorder='little')
