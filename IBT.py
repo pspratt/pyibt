@@ -52,7 +52,7 @@ class IBT:
 
         #check if it is the right kind of file
         if not ibt_File_Path.lower().endswith(".ibt"):
-            raise Exception("File must but ")
+            raise Exception("File must have the file extension 'ibt'")
 
         #Check if file paths and filenames exists
         self.ibt_File_Path = ibt_File_Path

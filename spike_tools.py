@@ -16,15 +16,19 @@ def get_spike_properties(ibt,sweep,spike_start_idx):
 
     #find zero crossings of dVdt after spike dVdt_threshold
     dVdt = ibt.dVdt[spike_start_idx:]
-    spike_end_idx = find_zero_crossing(dVdt)[1]+spike_start_idx
+    zero_crosses = find_zero_crossing(dVdt)
+
+    #make sure zero cross is persistent to account for noise
+    spike_end_idx = spike_start_idx + zero_crosses[np.argwhere(np.diff(zero_crosses)>2)[0] + 1][0]
+
     spike_Vm = ibt.sweep_Y[spike_start_idx:spike_end_idx]
     spike_time = ibt.sweep_X[spike_start_idx:spike_end_idx] - ibt.sweep_X[spike_start_idx]
 
     properties = {}
-    properies['start_idx'] = spike_start_idx
-    properies['start_time'] = ibt.sweep_X[spike_start_idx]
-    properies['end_idx'] = spike_end_idx
-    properies['end_time'] = ibt.sweep_X[spike_end_idx]
+    properties['start_idx'] = spike_start_idx
+    properties['start_time'] = ibt.sweep_X[spike_start_idx]
+    properties['end_idx'] = spike_end_idx
+    properties['end_time'] = ibt.sweep_X[spike_end_idx]
     properties['Vm'] = spike_Vm
     properties['time'] = spike_time
     properties['thresh'] = spike_Vm[0]
@@ -45,13 +49,17 @@ def get_spikes(ibt, sweep_num, dVdt_thresh = 15, min_spike_len = 0.1):
     dVdt_thresh: dVdt threshold for determining spike initiation
     min_spike_len: minimum time in ms that the sweep must be above dVdt_threshold to be considered a spike
     '''
+    if ibt.sweeps[sweep_num]["rec_mode"] != 1:
+        raise Exception('Sweep must be recorded in current clamp mode')
     ibt.set_sweep(sweep_num)
+
+
     #determine where dVdt exceeds dVdt_thresh
     runs = group_consecutives(np.argwhere((ibt.dVdt>dVdt_thresh)).flatten())
     spikes = []
     for run in runs:
         if len(run) > np.ceil(ibt.sweep_points_per_sec/(1000/min_spike_len)):
-            spikes.append(get_spike_properties(ibt,sweep,run[0])
+            spikes.append(get_spike_properties(ibt,sweep_num,run[0]))
     return spikes
 
 def group_consecutives(vals, step=1):
@@ -83,9 +91,9 @@ def plot_spike(spike, ax=[]):
     ax.plot(spike['time']-spike['time'][0],spike['Vm'])
     ax.set_xlabel('Time (seconds)')
     ax.set_ylabel('Membrane Potential (mV)')
+    return ax
 
-
-def FI_analysis(ibt, sweep_start, num_sweeps, stim_start = .05, stim_dur = .3, dVdt_thresh = 15, 
+def FI_analysis(ibt, sweep_start, num_sweeps, stim_start = .05, stim_dur = .3, dVdt_thresh = 15,
                 min_spike_len = 0.1):
 
     FI_data = {}
@@ -103,7 +111,7 @@ def FI_analysis(ibt, sweep_start, num_sweeps, stim_start = .05, stim_dur = .3, d
         FI_data['Vm'].append(ibt.sweep_Y[0])
 
         #Find all spikes in the sweep
-        all_spikes = detect_spikes(ibt, sweep_num,
+        all_spikes = get_spikes(ibt, sweep_num,
                                         dVdt_thresh = dVdt_thresh,
                                         min_spike_len = min_spike_len)
         if len(all_spikes) > 0:
