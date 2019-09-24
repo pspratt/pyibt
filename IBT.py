@@ -40,7 +40,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from pyibt.parse_IBT import parse_ibt
+from pyibt.parse_IBT import *
 
 # TODO(ken): Factor out interfaces for sweeps, analysis and plotting.
 # E.G. "cell" class that stores a list of identically formatted sweep objects. Sweeps
@@ -48,7 +48,7 @@ from pyibt.parse_IBT import parse_ibt
 # cells contain analysis/plotting methods that go across-sweep.
 class IBT:
 
-    def __init__(self, ibt_File_Path):
+    def __init__(self, ibt_File_Path, sweeps = []):
 
         #check if it is the right kind of file
         if not ibt_File_Path.lower().endswith(".ibt"):
@@ -60,36 +60,46 @@ class IBT:
             raise ValueError("IBT file does not exist: %s" % self.ibt_File_Path)
         self.ibt_path = ibt_File_Path
         self.ibt_name = os.path.splitext(os.path.basename(self.ibt_File_Path))[0]
-        self.sweeps, self.exp_details = parse_ibt(ibt_File_Path)
+
+        self.exp_details = get_experiment_details(ibt_File_Path)
+        self._sweep_headers = get_sweep_headers(ibt_File_Path)
+
+        if not sweeps:
+            self.sweeps = parse_sweep_headers(ibt_File_Path, self._sweep_headers)
+        else:
+            sweep_headers = [self._sweep_headers[sweep] for sweep in sweeps]
+            self.sweeps = parse_sweep_headers(ibt_File_Path, sweep_headers)
+
         self.time = []
         self.sweep_list = []
         self.temp = []
         self.count = len(self.sweeps)
         for i, sweep in enumerate(self.sweeps):
-            self.time.append(self.sweeps[i]['sweep_time'])
-            self.sweep_list.append(i)
-            self.temp.append(self.sweeps[i]['temperature'])
+            self.time.append(sweep['sweep_time'])
+            self.sweep_list.append(sweep['sweep_num'])
+            self.temp.append(sweep['temperature'])
         self.Vm_epoch = [0,0.001] #[start,stop]
         self.amp_epoch = [0.048,0.05,0.0558,0.0658]#[baseline_start,baseline_stop,amp_start,amp_end]
         self.slope_epoch = [0.0524,0.0544] #[start,stop]
         self.Rin_epoch = [0.5,0.55,0.635,0.645]#[baseline_start,baseline_stop,amp_start,amp_end]
-        self.set_sweep(0)
+        self.set_sweep(self.sweep_list[0])
 
     def set_sweep(self,sweep_num):
         #update sweep values
-        self.sweep_Y = self.sweeps[sweep_num]["dataY"]
-        self.sweep_X = self.sweeps[sweep_num]["dataX"]
-        self.sweep_C = self.sweeps[sweep_num]["dataC"]
-        self.sweep_temp = self.sweeps[sweep_num]['temperature']
+        sweep_idx = self.sweep_list.index(sweep_num)
+        self.sweep_Y = self.sweeps[sweep_idx]["dataY"]
+        self.sweep_X = self.sweeps[sweep_idx]["dataX"]
+        self.sweep_C = self.sweeps[sweep_idx]["dataC"]
+        self.sweep_temp = self.sweeps[sweep_idx]['temperature']
         self.sweep_num = sweep_num
-        self.sweep_points_per_sec = self.sweeps[sweep_num]["sample_rate"]
+        self.sweep_points_per_sec = self.sweeps[sweep_idx]["sample_rate"]
 
         #set axes labels
         self.sweep_X_label = "Time (seconds)"
-        if self.sweeps[sweep_num]["rec_mode"] == 1: #voltage clamp
+        if self.sweeps[sweep_idx]["rec_mode"] == 1: #voltage clamp
             self.sweep_Y_label = "Membrane Potential (mV)"
             self.sweep_C_label = "Applied Current (pA)"
-        elif self.sweeps[sweep_num]["rec_mode"] == 2: #voltage clamp
+        elif self.sweeps[sweep_idx]["rec_mode"] == 2: #voltage clamp
             self.sweep_Y_label = "Clamp Current (pA)"
             self.sweep_C_label = "Command Voltage (mV)"
         else:

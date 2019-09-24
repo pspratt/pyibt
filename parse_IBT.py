@@ -62,6 +62,122 @@ Perry Spratt 2019-08-01
 import numpy as np
 import struct
 
+def get_sweep_headers(ibt_File_Path):
+    '''
+    Function returns sweep heads of ibt file specified by ibt_File_Path
+    '''
+    sweep_pointers = []
+
+    with open(ibt_File_Path,"rb") as fb:
+
+        magic_number = int.from_bytes(fb.read(2),byteorder='little',signed=1)
+        if magic_number != 11: #check if the magic number matches ecceles file magic number
+            raise Exception("This is not a valid igor sweep file")
+
+        EOF = False
+        next_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little')
+
+        while not EOF:
+            fb.seek(next_sweep_pointer)
+            magic_number = int.from_bytes(fb.read(2),byteorder='little')
+            if magic_number != 12:
+                print(magic_number)
+                raise Exception("Failed to find sweep")
+
+            sweep_pointers.append(next_sweep_pointer)
+
+            fb.seek(next_sweep_pointer+204)
+            next_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little')
+
+            if next_sweep_pointer == 0:
+                EOF = True # This is the final sweep in the linked list
+                return sweep_pointers
+
+def parse_sweep_headers(ibt_File_Path, sweep_headers):
+    with open(ibt_File_Path,"rb") as fb:
+        #Check if the file is the correct type using the magic number
+        magic_number = int.from_bytes(fb.read(2),byteorder='little',signed=1)
+        if magic_number != 11: #check if the magic number matches ecceles file magic number
+            raise Exception("This is not a valid igor sweep file")
+
+
+        #follow the linked list through each of the Sweeps
+        sweeps = [] #list that sweep dicts will go in
+
+        for header in sweep_headers:
+
+            fb.seek(header) #go next sweep
+            #check if we were sent to the right place
+            magic_number = int.from_bytes(fb.read(2),byteorder='little')
+            if magic_number != 12:
+                raise Exception("Failed to find sweep")
+            sweep = {}
+            sweep["sweep_num"] = int.from_bytes(fb.read(2),byteorder='little')
+            sweep["num_points"] =  int(struct.unpack('<f', fb.read(4))[0]) #number of data points in the sweep
+            sweep["scale_factor"] = int.from_bytes(fb.read(4),byteorder='little')
+            sweep["amp_gain"] = struct.unpack('<f', fb.read(4))[0]
+            sweep["sample_rate"] = struct.unpack('<f', fb.read(4))[0] * 1000 #specified in kHz. Convert to Hz for clarity
+            sweep["rec_mode"] = struct.unpack('<f', fb.read(4))[0] #0 = OFF;  1 = current clamp;  2 = voltage clamp
+            sweep["dx"] = struct.unpack('<f', fb.read(4))[0]
+            sweep["sweep_time"] = struct.unpack('<f', fb.read(4))[0]
+            sweep["command_pulse_flag"] = []
+            sweep["command_pulse_value"] = []
+            sweep["command_pulse_start"] = []
+            sweep["command_pulse_duration"] = []
+            for num in range(5):
+                sweep["command_pulse_flag"].append(int.from_bytes(fb.read(4),byteorder='little'))
+                sweep["command_pulse_value"].append(struct.unpack('<d', fb.read(8))[0])
+                sweep["command_pulse_start"].append(struct.unpack('<d', fb.read(8))[0])
+                sweep["command_pulse_duration"].append(struct.unpack('<d', fb.read(8))[0])
+            sweep["DC_pulse_flag"] = struct.unpack('<d', fb.read(8))[0]
+            sweep["DC_pulse_value"]  = struct.unpack('<d', fb.read(8))[0]
+            sweep["temperature"] = struct.unpack('<f', fb.read(4))[0]
+            fb.read(8) #unspecified Values
+
+            sweep_data_pointer = int.from_bytes(fb.read(4),byteorder='little')
+
+            fb.seek(sweep_data_pointer) #go to sweep data
+            magic_number = int.from_bytes(fb.read(2),byteorder='little')
+            if magic_number != 13: #check if we went to the correct place
+                print("incorrect sweep byte address")
+            sweep["dataY"] = []
+            for point in range(sweep["num_points"]):
+                sweep["dataY"].append((int.from_bytes(fb.read(2),byteorder='little',signed=1)
+                                            /sweep["scale_factor"]
+                                            /sweep["amp_gain"])
+                                            *1000)
+            sweep["dataY"] = np.asarray(sweep["dataY"]) #numpy array makes working with data array easier than as a list
+            sweep["dataX"] = []
+            [sweep["dataX"].append(x/sweep["sample_rate"]) for x in range(sweep["num_points"])]
+            sweep["dataX"] = np.asarray(sweep["dataX"])
+
+            dataC = np.zeros(shape=(sweep["num_points"],))
+            for i in range(5):
+                if sweep["command_pulse_flag"][i]:
+                    com_start_idx = int(sweep["command_pulse_start"][i] * sweep["sample_rate"]/1000)
+                    com_durr_pts = int(sweep["command_pulse_duration"][i] * sweep["sample_rate"]/1000)
+                    com_end_idx = int(com_start_idx + com_durr_pts)
+                    dataC[com_start_idx:com_end_idx] = dataC[com_start_idx:com_end_idx]+sweep["command_pulse_value"][i]
+            sweep["dataC"] = dataC
+            sweeps.append(sweep)
+
+        return sweeps
+
+def get_experiment_details(ibt_File_Path):
+    with open(ibt_File_Path,"rb") as fb:
+        #Check if the file is the correct type using the magic number
+        magic_number = int.from_bytes(fb.read(2),byteorder='little',signed=1)
+        if magic_number != 11: #check if the magic number matches ecceles file magic number
+            raise Exception("This is not a valid igor sweep file")
+        next_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little') # pointer to the first sweep
+        fb.read(4) # Unsure if this is the time of experiment start or time of first sweep. Disregard for Now
+        exp_details = {}
+        exp_details["y_axis_label"] = fb.read(20).decode('utf-8')
+        exp_details["x_axis_label"] = fb.read(20).decode('utf-8')
+        exp_details["exp_name"] = fb.read(20).decode('utf-8')
+    return exp_details
+
+
 def parse_ibt(ibt_File_Path):
     """
     Function extracts data from the IBT file specified by ibt_File_Path
@@ -117,6 +233,7 @@ def parse_ibt(ibt_File_Path):
 
             sweep_data_pointer = int.from_bytes(fb.read(4),byteorder='little')
             next_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little')
+
             # previous_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little')
             if next_sweep_pointer == 0:
                 EOF = True # This is the final sweep in the linked list
