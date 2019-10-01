@@ -56,36 +56,6 @@ ax = boxoff(ax)
 plt.savefig('plot_phase_plane result.png')
 plt.show()
 
-#Plot Vm, Rin, and temp across sweeps
-fig = plt.figure(figsize=(7,8))
-ax1 = fig.add_subplot(311)
-ax2 = fig.add_subplot(312,sharex=ax1)
-ax3 = fig.add_subplot(313,sharex=ax1)
-ax1 = boxoff(ax1)
-ax2 = boxoff(ax2)
-ax3 = boxoff(ax3)
-
-ax1.scatter(ibt.time,ibt.Vm,color='C0')
-ax1.set_ylim(-90,-50)
-ax1.set_title('Membrane Potential')
-ax1.set_ylabel('mV')
-ax1.tick_params(labelbottom=False)
-
-ax2.scatter(ibt.time,ibt.Rin,color='C1')
-ax2.set_ylim(0,500)
-ax2.set_title('Input Resistance')
-ax2.set_ylabel('mOhm')
-ax2.tick_params(labelbottom=False)
-
-ax3.scatter(ibt.time,ibt.temp,color='C2')
-ax3.set_ylim(30,40)
-ax3.set_title('Temperature')
-ax3.set_ylabel('ºC')
-ax3.set_xlabel('Time (sec)')
-
-plt.savefig('plot of Vm_Rin_temp by time.png')
-plt.show()
-
 #Get fancy
 fig = plt.figure(figsize=(8,8))
 ax = plt.gca()
