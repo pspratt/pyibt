@@ -104,6 +104,37 @@ class IBT:
             self.sweep_Y_label = "unknown"
             self.sweep_C_label = "unknown"
 
+    def get_sub_sweep_Vm(self, sweep_num, start_point, num_points):
+        """
+        get Vm data for sweep num from start_point to start_point+num_points
+        """
+        sweep = self.sweeps[sweep_num]
+        with open(self.ibt_File_Path,"rb") as fb:
+            fb.seek(sweep['sweep_data_pointer']) #go to sweep data
+            magic_number = int.from_bytes(fb.read(2),byteorder='little')
+            if magic_number != 13: #check if we went to the correct place
+                print("incorrect sweep byte address")
+
+            #Ensure requested points are within the limits of the sweep
+            if num_points < 1:
+                raise Exception("num_points must be greater than 1")
+            elif start_point + num_points > sweep["num_points"]:
+                raise Exception("Requested range exceeds sweep length")
+            elif start_point < 0:
+                raise Exception("start_point must be greater than 0")
+
+            if num_points == 1:
+                fb.seek(sweep['sweep_data_pointer']+2 + start_point*2)
+                return int.from_bytes(fb.read(2),byteorder='little',signed=1)/sweep["scale_factor"]/sweep["amp_gain"]*1000
+            else:
+                fb.seek(sweep['sweep_data_pointer']+2 + start_point*2)
+                Vm = []
+                for i in range(num_points):
+                    Vm.append((int.from_bytes(fb.read(2),byteorder='little',signed=1)/sweep["scale_factor"]/sweep["amp_gain"])*1000)
+
+            return Vm
+
+
     @property
     def dVdt(self):
         return np.gradient(self.sweep_Y,self.sweep_X)/1e3
@@ -168,13 +199,25 @@ class IBT:
 
         return ax
 
-    def plot_phase_plane(self, ax=[], color='k',t_lim=[]):
+    def plot_phase_plane(self, ax=[], color='k',t_lim=[], pipette_offset = 0):
         if ax == []:
             ax = plt.gca()
+
+
         if t_lim == []:
-            ax.plot(self.sweep_Y, self.dVdt, color=color)
+            vm = self.sweep_Y
+            dVdt = self.dVdt
+
         else:
-            ax.plot(self.sweep_X[t_lim[0]:t_lim[1]], self.sweep_C[t_lim[0]:t_lim[1]], color=color)
+            start = int(t_lim[0]*self.sweep_points_per_sec)
+            end = int(t_lim[1]*self.sweep_points_per_sec)
+            vm = self.sweep_Y[start:end]
+            dVdt = self.dVdt[start:end]
+
+        if pipette_offset != 0:
+            vm = vm+pipette_offset
+
+        ax.plot(vm, dVdt, color=color)
         ax.set_ylabel('dVdt (V/sec)', fontsize=14)
         ax.set_xlabel(self.sweep_Y_label, fontsize=14)
 
