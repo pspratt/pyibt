@@ -5,3 +5,6 @@ Requires:
 os
 numpy
 matplotlib
+
+struct
+
