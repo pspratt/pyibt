@@ -1,20 +1,20 @@
 
 import numpy as np
 
-def get_spike_times(self,dVdt_thresh=15,min_spike_len=.2):
+def spike_times(self,dVdt_thresh=15,min_spike_len=.2):
 
     if self.rec_mode != "current clamp":
         raise Exception("rec_mode must be in current clamp")
     return detect_spike_times(self.data, self.time,
                           dVdt_thresh=dVdt_thresh, min_spike_len=min_spike_len)
 
-def get_spike_properties(self,dVdt_thresh=15,min_spike_len=.2):
+def spike_properties(self,dVdt_thresh=15,min_spike_len=.2):
     if self.rec_mode != "current clamp":
         raise Exception("rec_mode must be in current clamp")
     return detect_spike_properties(self.data, self.time,
                           dVdt_thresh=dVdt_thresh, min_spike_len=min_spike_len)
 
-def get_spike_times_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.2):
+def spike_times_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.2):
     if self.rec_mode != "current clamp":
         raise Exception("rec_mode must be in current clamp")
 
@@ -29,7 +29,7 @@ def get_spike_times_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.2
                                            dVdt_thresh = dVdt_thresh,
                                            min_spike_len = min_spike_len)
 
-def get_spike_properties_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.2):
+def spike_properties_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.2):
     if self.rec_mode != "current clamp":
         raise Exception("rec_mode must be in current clamp")
 
@@ -46,7 +46,7 @@ def get_spike_properties_during_command(self,comm_num,dVdt_thresh=15,min_spike_l
             command_spikes.append(spike)
     return command_spikes
 
-def get_Rin_from_command(self,comm_num,window_size=0.01):
+def Rin_from_command(self,comm_num,window_size=0.01):
     command = self.commands[comm_num]
     if not command['flag']:
         raise Exception('Command {} not activated'.format(comm_num))
@@ -66,7 +66,7 @@ def get_Rin_from_command(self,comm_num,window_size=0.01):
                         pA_pre=pre,pA_post=post)
     return -1
 
-def get_data_during_command(self, comm_num,lpad=0,rpad=0):
+def data_during_command(self, comm_num,lpad=0,rpad=0):
     command = self.commands[comm_num]
     if not command['flag']:
         raise Exception('Command {} not activated'.format(comm_num))
@@ -197,7 +197,7 @@ def detect_spike_times(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0001):
                           min_spike_len = min_spike_len,
                           properties=False)
 
-def detect_spike_properties(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0001, properties=True):
+def detect_spike_properties(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0001):
     '''
     Wrapper of detect_spikes to only get spike properties
     '''
@@ -205,7 +205,6 @@ def detect_spike_properties(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0001, 
                           dVdt_thresh = dVdt_thresh,
                           min_spike_len = min_spike_len,
                           properties=True)[1]
-
 
 def group_consecutives(vals, step=1):
     """Return list of consecutive lists of numbers from vals (number list)."""
