@@ -4,9 +4,16 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import pytz
 from pyibt.ibt_sweep import ibt_sweep
-class read_ibt(object):
+
+def read_ibt(ibt_File_Path):
+    '''
+    Wrapper for the ibt object class
+    '''
+    return ibt(ibt_File_Path)
+
+class ibt(object):
     """
-    IBT Class:
+    ibt class:
     Object that allows for extracting and interacting with data stored in IBT files
     created by ecceles anaylsis
 
