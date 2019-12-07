@@ -45,13 +45,13 @@ class ibt_sweep(object):
     plot_phase_plane
     convert_start_and_duration
     """
-    from pyibt.ibt_sweep._analysis import get_spike_times,\
-                                        get_spike_properties,\
-                                        get_spike_times_during_command,\
-                                        get_spike_properties_during_command,\
-                                        get_spike_properties_during_command,\
-                                        get_Rin_from_command,\
-                                        get_data_during_command,\
+    from pyibt.ibt_sweep._analysis import spike_times,\
+                                        spike_properties,\
+                                        spike_times_during_command,\
+                                        spike_properties_during_command,\
+                                        spike_properties_during_command,\
+                                        Rin_from_command,\
+                                        data_during_command,\
                                         calc_Rin,\
                                         detect_spike_times,\
                                         detect_spike_properties,\

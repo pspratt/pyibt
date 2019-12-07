@@ -25,8 +25,13 @@ class ibt(object):
     sweep_list: list of sweep numbers in ibt files
     num_sweeps: number of sweeps in ibt files
     """
-    from pyibt.read_ibt._plot_methods import plot_all_sweeps, plot_all_commands
-    from pyibt.read_ibt._analysis import find_sweeps_with_command,check_sweep_commands
+    from pyibt.read_ibt._plot_methods import plot_all_sweeps,\
+                                                plot_all_commands
+    from pyibt.read_ibt._analysis import find_sweeps_with_command,\
+                                            check_sweep_commands,\
+                                            average_sweeps,\
+                                            average_sweeps_during_command,\
+                                            p_n_subtraction
 
     def __init__(self, ibt_File_Path):
 
