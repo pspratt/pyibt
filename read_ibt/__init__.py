@@ -25,8 +25,17 @@ class ibt(object):
     sweep_list: list of sweep numbers in ibt files
     num_sweeps: number of sweeps in ibt files
     """
-    from pyibt.read_ibt._plot_methods import plot_all_sweeps,\
+
+    #import plotting methods
+    from pyibt.read_ibt._plot_methods import plot_sweep,\
+                                                plot_sweep_phase_plane,\
+                                                plot_command,\
+                                                plot_sweeps,\
+                                                plot_commands,\
+                                                plot_all_sweeps,\
                                                 plot_all_commands
+
+    #import analysis methods
     from pyibt.read_ibt._analysis import find_sweeps_with_command,\
                                             check_sweep_commands,\
                                             average_sweeps,\
@@ -61,6 +70,7 @@ def get_sweep_headers(ibt_File_Path):
     sweep_pointers = []
 
     with open(ibt_File_Path,"rb") as fb:
+
         magic_number = int.from_bytes(fb.read(2),byteorder='little',signed=1)
         if magic_number != 11: #check if the magic number matches ecceles file magic number
             raise Exception("This is not a valid igor sweep file")
@@ -69,12 +79,12 @@ def get_sweep_headers(ibt_File_Path):
         next_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little')
         while not EOF:
             fb.seek(next_sweep_pointer)
+
             magic_number = int.from_bytes(fb.read(2),byteorder='little')
             if magic_number != 12:
                 raise Exception("Failed to find sweep")
 
             sweep_pointers.append(next_sweep_pointer)
-
             fb.seek(next_sweep_pointer+204)
             next_sweep_pointer = int.from_bytes(fb.read(4),byteorder='little')
 
@@ -96,7 +106,6 @@ def get_experiment_details(ibt_File_Path):
         date_obj = date_obj-relativedelta(years=66)
         # date_obj = pytz.utc.localize(date_obj)
         # date_obj = date_obj.astimezone(pytz.timezone("America/Los_Angeles"))
-
         exp_details["exp_date"] = date_obj.strftime('%Y/%m/%d')
         exp_details["exp_time"] = date_obj.strftime('%H:%M:%S')
         exp_details["y_axis_label"] = fb.read(20).decode('utf-8')

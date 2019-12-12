@@ -71,7 +71,7 @@ class ibt_sweep(object):
 
     from pyibt.ibt_sweep._plot_methods import plot_sweep,\
                                             plot_response_to_command,\
-                                            plot_sweep_command,\
+                                            plot_command,\
                                             plot_phase_plane,\
                                             plot_spike
 

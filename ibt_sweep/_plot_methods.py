@@ -5,15 +5,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pyibt.ibt_sweep._data_extraction import *
 
-def plot_sweep(self, ax=[], color='k'):
-  if ax == []:
-      ax = plt.gca()
+def plot_sweep(self, ax=[], color='k',highlight_commands=False):
+    if ax == []:
+        ax = plt.gca()
 
-  ax.plot(self.time, self.data, color=color)
-  ax.set_ylabel(self.y_label)
-  ax.set_xlabel(self.x_label)
-
-  return ax
+    ax.plot(self.time, self.data, color=color)
+    ax.set_ylabel(self.y_label)
+    ax.set_xlabel(self.x_label)
+    if highlight_commands:
+        for command in self.commands:
+            if command['flag']:
+                ax.axvspan(command['start'],
+                         command['start']+command['duration'],
+                         color='lightcoral',
+                         alpha=0.3)
+    return ax
 
 def plot_response_to_command(self, comm_num,ax=[],color='k',lpad=0,rpad=0):
   command = self.commands[comm_num]
@@ -39,13 +45,13 @@ def plot_response_to_command(self, comm_num,ax=[],color='k',lpad=0,rpad=0):
   ax.set_xlabel(self.x_label)
   return ax
 
-def plot_sweep_command(self, ax=[], color='k'):
+def plot_command(self, ax=[], color='k'):
     if ax == []:
       ax = plt.gca()
 
     ax.plot(self.time, self.command, color=color)
     ax.set_ylabel(self.y_label)
-    ax.set_xlabel(self.x_label)
+    ax.set_xlabel(self.command_label)
 
     return ax
 
