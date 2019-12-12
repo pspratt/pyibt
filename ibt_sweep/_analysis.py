@@ -1,12 +1,14 @@
 
 import numpy as np
 
-def spike_times(self,dVdt_thresh=15,min_spike_len=.2):
+def spike_times(self,dVdt_thresh=15,min_spike_len=.0002):
 
     if self.rec_mode != "current clamp":
         raise Exception("rec_mode must be in current clamp")
-    return detect_spike_times(self.data, self.time,
-                          dVdt_thresh=dVdt_thresh, min_spike_len=min_spike_len)
+    return detect_spike_times(self.data,
+                              self.time,
+                              dVdt_thresh=dVdt_thresh,
+                              min_spike_len=min_spike_len)
 
 def spike_properties(self,dVdt_thresh=15,min_spike_len=.2):
     if self.rec_mode != "current clamp":
@@ -14,7 +16,7 @@ def spike_properties(self,dVdt_thresh=15,min_spike_len=.2):
     return detect_spike_properties(self.data, self.time,
                           dVdt_thresh=dVdt_thresh, min_spike_len=min_spike_len)
 
-def spike_times_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.2):
+def spike_times_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.0002):
     if self.rec_mode != "current clamp":
         raise Exception("rec_mode must be in current clamp")
 
@@ -25,11 +27,9 @@ def spike_times_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.2):
     Vm = self.get_data(command['start'],command['duration'])
     time = self.get_time(command['start'],command['duration'],absolute=False)
 
-    return detect_spike_times(Vm, time,
-                                           dVdt_thresh = dVdt_thresh,
-                                           min_spike_len = min_spike_len)
+    return detect_spike_times(Vm, time, dVdt_thresh = dVdt_thresh, min_spike_len = min_spike_len)
 
-def spike_properties_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.2):
+def spike_properties_during_command(self,comm_num,dVdt_thresh=15,min_spike_len=.0002):
     if self.rec_mode != "current clamp":
         raise Exception("rec_mode must be in current clamp")
 
@@ -91,7 +91,7 @@ def calc_Rin(mV_pre,mV_post,pA_pre,pA_post):
     #Return value is in Mohm
     return np.abs((mV_pre-mV_post)/(pA_pre-pA_post)) * (1e-3/1e-12)/1e6
 
-def detect_spikes(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0001, properties=True):
+def detect_spikes(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0002, properties=True):
     '''
     Method for idenifying spikes based on rates of change in the membrane potential
     INPUTS:
@@ -172,23 +172,7 @@ def detect_spikes(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0001, properties
         spike_properties.append(spike)
     return spike_times,spike_properties
 
-def detect_spike_times(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0001):
-    """
-    detects spike times in Vm
-    """
-
-
-
-
-
-
-
-    #check if consecutive points above thresh are long enough to qualify as a spike
-
-
-
-    #for each run, ensure that it exceeds the spike time
-    #If so append the time of the first index of the run to spike_times
+def detect_spike_times(Vm, time, dVdt_thresh = 15, min_spike_len = 0.0002):
     '''
     Wrapper of detect_spikes to only get spike times
     '''
