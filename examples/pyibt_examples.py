@@ -5,72 +5,59 @@ Demonstation of how to extract and interact with data in ibt files using pyibt
 """
 Extracting data into and IBT object
 """
-import pyibt
-ibt = pyibt.IBT('ps20190510b.ibt') #that's it! If file is not in current dir file path muse be specified
+from pyibt import read_ibt
+ibt = read_ibt('ps20190510b.ibt')
 
 """
-Generating simple plots
+Define matplotlib defaults
 """
 import matplotlib.pyplot as plt
+plt.rcParams['axes.spines.right'] = False
+plt.rcParams['axes.spines.top'] = False
+plt.rcParams['font.sans-serif'] = "Arial"
+plt.rcParams['font.family'] = "sans-serif"
+plt.rcParams['pdf.fonttype'] = 42
+plt.rcParams['ps.fonttype'] = 42
 
-#First, write a function to remove the annoying borders around matplotlib plots
-def boxoff(ax):
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    return ax
+tick_major = 6
+tick_minor = 4
+plt.rcParams["xtick.major.size"] = tick_major
+plt.rcParams["xtick.minor.size"] = tick_minor
+plt.rcParams["ytick.major.size"] = tick_major
+plt.rcParams["ytick.minor.size"] = tick_minor
 
-#Plot every sweep in a ibt file
-fig = plt.figure()
-ax = ibt.plot_all_sweeps()
-ax = boxoff(ax)
-plt.savefig('plot_all_sweeps result.png')
-plt.show()
+font_small = 12
+font_medium = 13
+font_large = 14
+plt.rc('font', size=font_small)          # controls default text sizes
+plt.rc('axes', titlesize=font_medium)    # fontsize of the axes title
+plt.rc('axes', labelsize=font_medium)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=font_small)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=font_small)    # fontsize of the tick labels
+plt.rc('legend', fontsize=font_small)    # legend fontsize
+plt.rc('figure', titlesize=font_large)   # fontsize of the figure title
 
-#Plot every command in ibt file
-fig = plt.figure()
-ax = ibt.plot_all_sweep_commands()
-ax = boxoff(ax)
-plt.savefig('plot_all_sweep_commands result.png')
-plt.show()
+"""
+Lets make some plots
+"""
+#Lets plot every sweep in the ibt file
+fig=plt.figure();ax=plt.gca()
+ax=ibt.plot_all_sweeps(ax=ax)
 
-#plot a specific set_sweep
-ibt.set_sweep(15)
-fig = plt.figure()
-ax = ibt.plot_sweep()
-ax = boxoff(ax)
-plt.savefig('plot_sweep result.png')
-plt.show()
+#Lets plot every command in the ibt file
+fig=plt.figure();ax=plt.gca()
+ax=ibt.plot_all_commands(ax=ax)
 
-#plot a specific set_sweep_command
-ibt.set_sweep(15)
-fig = plt.figure()
-ax = ibt.plot_sweep_command()
-ax = boxoff(ax)
-plt.savefig('plot_sweep_command result.png')
-plt.show()
+#Plot a single sweep
+fig=plt.figure()
+ax1=fig.add_subplot(211)
+ibt.plot_sweep(16,ax=ax1)
+ax1.set_ylabel('mV')
 
-#plot phase-plane
-fig = plt.figure()
-ax = ibt.plot_phase_plane()
-ax = boxoff(ax)
-plt.savefig('plot_phase_plane result.png')
-plt.show()
+ax2=fig.add_subplot(212)
+ax2.set_ylabel('pA')
+ibt.plot_command(16,ax=ax2)
 
-#Get fancy
-fig = plt.figure(figsize=(8,8))
-ax = plt.gca()
-
-sweeps = [9,11,13,15,17,19,21]
-for i, sweep in enumerate(sweeps):
-    ibt.set_sweep(sweep)
-
-    start_idx = 0
-    end_idx = int(0.5 * ibt.sweep_points_per_sec)
-
-    x = ibt.sweep_X[start_idx:end_idx] + .025 * i
-    y = ibt.sweep_Y[start_idx:end_idx] + 25 * i
-    ax.plot(x,y,color='C0', alpha=.5)
-
-ax.axis('off')
-plt.savefig('fancy plot.png')
-plt.show()
+#plot sweep plot_phase_plane
+fig=plt.figure();ax=plt.gca()
+ax=ibt.plot_sweep_phase_plane(16,pipette_offset=-12,ax=ax)
