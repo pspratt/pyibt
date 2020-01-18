@@ -1,0 +1,33 @@
+This is a special folder.
+
+You can put Igor procedure files in here or shortcuts pointing to procedure
+files or to folders containing procedure files. If, when Igor is compiling
+procedures, it comes across a line of the following form:
+
+#include "a file name"
+
+Igor will look in this folder and in any sub-folders for a procedure file
+of named "a file name.ipf".
+
+Igor will also look at any files or folders referenced by shortcuts.
+If the procedure file is found, Igor will automatically open it,
+if it is not already open.
+
+Such procedure files are called "shared" procedure files.
+
+NOTE:
+  If you put a procedure file in this folder and then use its procedures
+  in an experiment then that experiment will rely the procedure file's presence.
+  If you transfer the experiment to another computer, you will need
+  to transfer the procedure file also. If you forget the procedure
+  file then the experiment will not work on the other computer.
+
+NOTE:
+  It is best if you save your own files in your own folder outside the
+  Igor Pro Folder. This makes it possible for you to upgrade Igor in the
+  future without worrying about losing your own files. To facilite this,
+  create a folder named Igor Shared Procedures outside the Igor Pro folder.
+  Now make a shortcut for your Igor Shared Procedures folder, and drag it
+  into the User Procedures folder. When Igor compiles a #include statement,
+  it will look for the file in your Igor Shared Procedures folder, or in any
+  a subfolder.
