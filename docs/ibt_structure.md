@@ -1,6 +1,6 @@
-# Structure of Bender Lab IBT files
+## Structure of ECCELES IBT files
 
-## File Open:
+### File Open:
 2 bytes (int):    IBT file magic number – should be 11
 4 bytes (int):    pointer to first sweep
 4 bytes (float):  absolute time of first sweep
@@ -8,7 +8,7 @@
 20 bytes (str):   name of x axis units
 20 bytes (str):   name of experiment
 
-## Following pointer to first sweep:
+### Following pointer to first sweep:
 2 bytes (int):    sweep magic numbers – should be 12
 2 bytes (int):    sweep number
 4 bytes (int):    number of data points in sweep
@@ -46,7 +46,7 @@
 4 bytes (int):    pointer to next sweep
 4 bytes (int):    pointer to previous sweep
 
-## Following pointer to sweep data:
+### Following pointer to sweep data:
 2 bytes (int):    sweep data magic number - should be 13
 2 bytes * number points (int): sweep data read 2 bytes per data point
 
