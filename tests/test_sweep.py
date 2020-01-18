@@ -7,7 +7,7 @@ add code for verifying that a command is active, add tests for this
 
 import unittest
 import os
-from pyibt.read_ibt import read_ibt
+from pyibt import read_ibt
 
 class test_sweep(unittest.TestCase):
 
