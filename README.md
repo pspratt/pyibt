@@ -5,27 +5,27 @@ pyibt is a Python module that provides a simple and intuitive API for analyzing 
 ## Getting started
 
 ### Loading data
-'''
+```python
 from pyibt import read_ibt
 ibt = read_ibt('demo.ibt')
-'''
+```
 
 ### Accessing file information
-'''
+```python
 print('ibt file name:', ibt.name)
 print('Number of sweeps:', len(ibt.sweeps))
-'''
-'''
+```
+```
 ibt file name: demo
 Number of sweeps: 28
-'''
+```
 
 ### Accessing sweep data
-'''
+```python
 sweep = ibt.sweeps[0]
 print
-'''
-'''
+```
+```
 Recording mode: current clamp
 Sweep data: [-63.18666667 -62.98666667 -62.89333333 ... -62.98666667 -62.98666667
  -63.18666667]
@@ -33,32 +33,31 @@ Recording mode: Membrane Potential (mV)
 Sweep time: [0.0000e+00 2.0000e-05 4.0000e-05 ... 9.9994e-01 9.9996e-01 9.9998e-01]
 Recording mode: Time (seconds)
 Sweep command: [0. 0. 0. ... 0. 0. 0.]
-'''
+```
 
 ### Quick plot functions'''
-
-'''
+```python
 fig = plt.figure(figsize=(8,6))
 ax1 = fig.add_subplot(211)
 ax1 = ibt.plot_sweep(sweep_num=16,ax=ax1)
 
 ax2 = fig.add_subplot(212)
 ax2 = ibt.plot_command(sweep_num=16,ax=ax2)
-'''
-
-'''
+```
+![docs/examples/example_plots/single_sweep.png](docs/examples/example_plots/single_sweep.png)
+```python
 fig = plt.figure(figsize=(5,5))
 ax=ibt.plot_sweep_phase_plane(sweep_num=16)
 ax.set_xlim(-50,60)
-'''
-
-'''
+```
+![docs/examples/example_plots/phase_plane.png](docs/examples/example_plots/phase_plane.png)
+```python
 fig=plt.figure(figsize=(8,5))
 ax=ibt.plot_all_sweeps()
-'''
-
+```
+![docs/examples/example_plots/all_sweeps.png](docs/examples/example_plots/all_sweeps.png)
 ### Get Creative
-'''
+```python
 sweeps = ibt.sweeps[9:25]
 cm = plt.get_cmap("winter")
 colors = [cm(i/len(sweeps)) for i,x in enumerate(sweeps)]
@@ -71,4 +70,10 @@ for i, sweep in enumerate(sweeps):
     plt.plot(x, y, color=colors[i], alpha=0.5)
 plt.gca().axis('off')
 plt.show()
-'''
+```
+![docs/examples/example_plots/fancy_FI_curve.png](docs/examples/example_plots/fancy_FI_curve.png)
+
+### Other features
+- Automatic detection and characterization action potential waveforms
+- Averaging of multiple sweeps
+- P by N subtraction
