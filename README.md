@@ -102,23 +102,26 @@ spike_num = [x for x in range(len(spikes))]
 spike_height = [spike['height'] for spike in spikes]
 spike_thresh = [spike['thresh'] for spike in spikes]
 
-fig = plt.figure(figsize=(8, 3))
+fig = plt.figure(figsize=(12, 4))
+cm=plt.cm.magma
+colors = [cm(i/len(sweeps)) for i, x in enumerate(sweeps)]
+
 ax1 = fig.add_subplot(131)
-for spike in spikes:
-    ax1.plot(spike['time'] * 1000, spike['Vm'])
+for i, spike in enumerate(spikes):
+    ax1.plot(spike['time'] * 1000, spike['Vm'], color=colors[i])
 ax1.set_ylabel('Mem. Pot. (mV)')
 ax1.set_xlabel('Time (ms)')
 
 ax2 = fig.add_subplot(132)
-ax2.plot(spike_num,spike_height, '-o', markersize=5)
+ax2.plot(spike_num,spike_height, '-o', markersize=8)
 ax2.set_ylabel('AP Height (mV)')
 ax2.set_xlabel('AP number')
 
 ax3 = fig.add_subplot(133)
-ax3.plot(spike_num,spike_thresh, '-o', markersize=5, color='tab:orange')
+ax3.plot(spike_num,spike_thresh, '-o', markersize=8, color='tab:orange')
 ax3.set_ylabel('AP Theshold (mV)')
 ax3.set_xlabel('AP number')
 ```
-![docs/examples/example_plots/AP_characterization.png](docs/examples/example_plots/AP_characterization.png)
+![docs/examples/example_plots/AP_char.png](docs/examples/example_plots/AP_characterization.png)
 
 **Details of the ibt file structure can be found** [here](docs/ibt_structure.md)
