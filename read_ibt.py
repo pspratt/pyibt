@@ -93,21 +93,6 @@ class read_ibt(object):
             valid_commands.append(np.asarray([value_criteria,duration_criteria,start_criteria]).any())
         return np.asarray(valid_commands)
 
-    def __variable_comparison(var1, var2, operator):
-        #checks is a and b with the start_operator
-        if operator == "=":
-            return var1 == var2
-        elif operator == ">":
-            return var1 > var2
-        elif operator == "<":
-            return var1 < var2
-        elif operator == "<=":
-            return var1 <= var2
-        elif operator == ">=":
-            return var1 >= var2
-        elif operator == "!=":
-            return var1 != var2
-
     def average_sweeps_during_command(self, sweep_list, command, lpad=0, rpad=0, zero=False):
         data=[]
         comm = self.sweeps[sweep_list[0]].commands[command]
@@ -240,3 +225,18 @@ class read_ibt(object):
         for sweep in self.sweeps:
             ax.plot(sweep.time, sweep.command, color=color)
         return ax
+
+def __variable_comparison(var1, var2, operator):
+    #checks is a and b with the start_operator
+    if operator == "=":
+        return var1 == var2
+    elif operator == ">":
+        return var1 > var2
+    elif operator == "<":
+        return var1 < var2
+    elif operator == "<=":
+        return var1 <= var2
+    elif operator == ">=":
+        return var1 >= var2
+    elif operator == "!=":
+        return var1 != var2
