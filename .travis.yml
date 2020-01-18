@@ -5,8 +5,7 @@ before_install:
   - "pip install -U pip"
 install:
   - export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-  - pip install -r requirements.txt
-  - pip install .
+  - pip install -r src/requirements.txt
 script:
   - python tests/test_read_ibt.py
   - python tests/test_sweep.py
