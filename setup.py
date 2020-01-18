@@ -1,4 +1,6 @@
-from setuptools import setup, find_packages
+#!/usr/bin/env python
+
+from distutils.core import setup
 
 setup(name='pyibt',
       version='0.0.1',
@@ -6,5 +8,5 @@ setup(name='pyibt',
       author='Perry Sprat',
       author_email='perrywespratt@gmail.com',
       url='https://github.com/pspratt/pyibt',
-      packages=find_packages(),
+      packages=[pyibt],
      )
