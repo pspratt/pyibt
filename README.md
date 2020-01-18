@@ -3,10 +3,21 @@ pyibt is a Python module that provides a simple and intuitive API for analyzing 
 
 
 ## Getting started
+
 ### Loading data
 '''
 from pyibt import read_ibt
 ibt = read_ibt('demo.ibt')
+'''
+
+### Accessing file information
+'''
+print('ibt file name:', ibt.name)
+print('Number of sweeps:', len(ibt.sweeps))
+'''
+'''
+ibt file name: demo
+Number of sweeps: 28
 '''
 
 ### Accessing sweep data
@@ -14,25 +25,50 @@ ibt = read_ibt('demo.ibt')
 sweep = ibt.sweeps[0]
 print
 '''
-
-### Plot every sweeps
 '''
-ibt.plot_all_sweeps()
-'''
-
-### Plot a specific sweep
-'''
-fig=plt.figure()
-ax1=fig.add_subplot(211)
-ibt.plot_sweep(sweep_num=16, ax=ax1)
-
-ax2=fig.add_subplot(212)
-ibt.plot_command(sweep_num=16, ax=ax2)
+Recording mode: current clamp
+Sweep data: [-63.18666667 -62.98666667 -62.89333333 ... -62.98666667 -62.98666667
+ -63.18666667]
+Recording mode: Membrane Potential (mV)
+Sweep time: [0.0000e+00 2.0000e-05 4.0000e-05 ... 9.9994e-01 9.9996e-01 9.9998e-01]
+Recording mode: Time (seconds)
+Sweep command: [0. 0. 0. ... 0. 0. 0.]
 '''
 
-### Create a phase plane plot
+### Quick plot functions'''
+
 '''
-ibt.plot_sweep_phase_plane(sweep_num=16)
+fig = plt.figure(figsize=(8,6))
+ax1 = fig.add_subplot(211)
+ax1 = ibt.plot_sweep(sweep_num=16,ax=ax1)
+
+ax2 = fig.add_subplot(212)
+ax2 = ibt.plot_command(sweep_num=16,ax=ax2)
 '''
 
-### Get fancy
+'''
+fig = plt.figure(figsize=(5,5))
+ax=ibt.plot_sweep_phase_plane(sweep_num=16)
+ax.set_xlim(-50,60)
+'''
+
+'''
+fig=plt.figure(figsize=(8,5))
+ax=ibt.plot_all_sweeps()
+'''
+
+### Get Creative
+'''
+sweeps = ibt.sweeps[9:25]
+cm = plt.get_cmap("winter")
+colors = [cm(i/len(sweeps)) for i,x in enumerate(sweeps)]
+
+plt.figure(figsize=(12,8))
+for i, sweep in enumerate(sweeps):
+    num_pnts = int(0.5/sweep.dx)
+    x = sweep.time[:num_pnts] + 0.02 * i
+    y = sweep.data[:num_pnts] + 10 * i
+    plt.plot(x, y, color=colors[i], alpha=0.5)
+plt.gca().axis('off')
+plt.show()
+'''
