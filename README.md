@@ -23,12 +23,16 @@ Number of sweeps: 28
 ### Accessing sweep data
 ```python
 sweep = ibt.sweeps[0]
-print
+print('Recording mode:',sweep.rec_mode)
+print('Sweep data:',sweep.data)
+print('Recording mode:',sweep.y_label)
+print('Sweep time:',sweep.time)
+print('Recording mode:',sweep.x_label)
+print('Sweep command:',sweep.command)
 ```
 ```
 Recording mode: current clamp
-Sweep data: [-63.18666667 -62.98666667 -62.89333333 ... -62.98666667 -62.98666667
- -63.18666667]
+Sweep data: [-63.18666667 -62.98666667 -62.89333333 ... -62.98666667 -62.98666667 -63.18666667]
 Recording mode: Membrane Potential (mV)
 Sweep time: [0.0000e+00 2.0000e-05 4.0000e-05 ... 9.9994e-01 9.9996e-01 9.9998e-01]
 Recording mode: Time (seconds)
