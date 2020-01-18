@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='pyibt',
       version='0.0.1',
@@ -6,5 +6,5 @@ setup(name='pyibt',
       author='Perry Sprat',
       author_email='perrywespratt@gmail.com',
       url='https://github.com/pspratt/pyibt',
-      packages=['pyibt'],
+      packages=find_packages(),
      )
