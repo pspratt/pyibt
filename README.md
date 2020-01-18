@@ -1,4 +1,6 @@
 ## pyibt
+![](https://travis-ci.org/pspratt/pyibt.svg?branch=master)
+
 pyibt is a Python module that extends the functionality of the ECCELES Electrophysiology Suite with a simple and intuitive API for the analysis and visualization of electrophysiology data in Python.
 
 ECCELES is an online electrophysiology acquisition program developed for the IGOR Pro data analysis platform (WaveMetrics) that allows for conducting and and analyzing highly customizable and flexible electrophysiological experiments. ELLECES however requires a very specific computing environment to run correctly, requires proprietary software (Igor Pro), and has a limited ability to implement automated and repetitive analyses.
@@ -153,12 +155,9 @@ ax3.plot(spike_num,spike_dVdt, '-o', markersize=8, color='tab:red')
 
 pyibt was inspired by the [pyABF module written by Scott Harden](https://github.com/swharden/pyABF) for Axon Binary Format (ABF) files.
 
-### Author 
+## Author 
 
-Perry Spratt
-
-PhD Candidate, Bender Lab
-
-University of California, San Francisco
-
+**Perry Spratt**\
+PhD Candidate, [Bender Lab](https://benderlab.ucsf.edu/lab-members)\
+University of California, San Francisco\
 perrywespratt@gmail.com
