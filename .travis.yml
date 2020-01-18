@@ -4,7 +4,7 @@ cache: pip
 before_install:
   - "pip install -U pip"
 install:
-  - export PYTHONPATH=$PYTHONPATH:$(pwd)/src/thermo
+  - export PYTHONPATH=$PYTHONPATH:$(pwd)/src
   - pip install -r requirements.txt
   - pip install .
 script:

@@ -1,23 +1,28 @@
-
-# TODO(pspratt): Register github with travis-ci.org for integration testing
-
 """
+Tests to ensure that read_ibt can load ibt files
+
 TODO:
-Add tests for
 command check functions
 average sweeps
 p_n_subtraction
 plotting
 """
+
 import unittest
 import os
-from pyibt import read_ibt
+import sys
+try:
+    #  ensure pyIBT is imported from this specific path
+    sys.path.insert(0, "src")
+    from pyibt.read_ibt import Read_IBT
+except:
+    raise ImportError("could not import local pyABF")
 
 class test_read_ibt(unittest.TestCase):
 
     def setUp(self):
         path = os.path.dirname(os.path.abspath(__file__))
-        self.ibt = read_ibt(path + '/test_cell.ibt')
+        self.ibt = Read_IBT(path + '/data/test_cell.ibt')
 
     def test_read_ibt(self):
         self.assertEqual(self.ibt.name,'test_cell')

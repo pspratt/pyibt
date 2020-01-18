@@ -7,13 +7,19 @@ add code for verifying that a command is active, add tests for this
 
 import unittest
 import os
-from pyibt import read_ibt
+import sys
+try:
+    # ensure pyIBT is imported from this specific path
+    sys.path.insert(0, "src")
+    from pyibt.read_ibt import Read_IBT
+except:
+    raise ImportError("could not import local pyIBT")
 
 class test_sweep(unittest.TestCase):
 
     def setUp(self):
         path = os.path.dirname(os.path.abspath(__file__))
-        ibt = read_ibt(path + '/test_cell.ibt')
+        ibt = Read_IBT(path + '/data/test_cell.ibt')
         self.sweeps = ibt.sweeps
 
     def tearDown(self):

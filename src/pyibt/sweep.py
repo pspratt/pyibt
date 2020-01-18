@@ -2,7 +2,7 @@ import struct
 import numpy as np
 import matplotlib.pyplot as plt
 
-class sweep(object):
+class Sweep(object):
 
     """
     ibt_sweep Class:

@@ -1,9 +1,9 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from pyibt.sweep import sweep
+from pyibt.sweep import Sweep
 
-class read_ibt(object):
+class Read_IBT(object):
     """
     ibt class:
     Object that allows for extracting and interacting with data stored in IBT files
@@ -22,7 +22,7 @@ class read_ibt(object):
         self.sweeps = []
         self._sweep_pointers = self._get_sweep_pointers()
         for sweep_pointer in self._sweep_pointers:
-            self.sweeps.append(sweep(self.ibt_File_Path, sweep_pointer))
+            self.sweeps.append(Sweep(self.ibt_File_Path, sweep_pointer))
 
     def _get_sweep_pointers(self):
         '''
