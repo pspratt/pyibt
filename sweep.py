@@ -79,7 +79,7 @@ class sweep(object):
             raise Exception("Index must be greater than zero")
         elif index > len(t):
             raise Exception("Index exceeds sweep length")
-        return self.t[index]
+        return t[index]
 
     @property
     def time(self):
@@ -203,7 +203,7 @@ class sweep(object):
         if not command['flag']:
             raise Exception('Command {} not activated'.format(comm_num))
 
-        all_spikes = self.get_spike_properties(dVdt_thresh=dVdt_thresh,min_spike_len=min_spike_len)
+        all_spikes = self.spike_properties(dVdt_thresh=dVdt_thresh,min_spike_len=min_spike_len)
 
         command_spikes = []
         for spike in all_spikes:
