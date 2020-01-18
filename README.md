@@ -122,10 +122,6 @@ ax3.plot(spike_num,spike_thresh, '-o', markersize=8, color='tab:orange')
 ax3.set_ylabel('AP Theshold (mV)')
 ax3.set_xlabel('AP number')
 ```
-<<<<<<< HEAD
-![docs/examples/example_plots/AP_char.png](docs/examples/example_plots/AP_characterization.png)
-=======
 ![docs/examples/example_plots/AP_char.png](docs/examples/example_plots/AP_char.png)
->>>>>>> 2f7c4ff930ccda2c485ae6d7393ae9995238a547
 
 **Details of the ibt file structure can be found** [here](docs/ibt_structure.md)
