@@ -11,7 +11,7 @@ plotting
 """
 import unittest
 import os
-from pyibt import read_ibt
+import read_ibt
 
 class test_read_ibt(unittest.TestCase):
 
