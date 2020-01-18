@@ -92,7 +92,7 @@ plt.ylabel('Number of Action potentials')
 plt.xlabel('Applied current (pA)')
 plt.savefig('example_plots/FI_curve.png')
 ```
-![docs/examples/example_plots/FI_curve.png](docs/examples/FI_curve.png)
+![docs/examples/example_plots/FI_curve.png](docs/examples/example_plots/FI_curve.png)
 
 ```Python
 sweep = ibt.sweeps[25]
@@ -119,6 +119,6 @@ ax3.plot(spike_num,spike_thresh, '-o', markersize=5, color='tab:orange')
 ax3.set_ylabel('AP Theshold (mV)')
 ax3.set_xlabel('AP number')
 ```
-![docs/examples/example_plots/AP_characterization.png](docs/examples/AP_characterization.png)
+![docs/examples/example_plots/AP_characterization.png](docs/examples/example_plots/AP_characterization.png)
 
 **Details of the ibt file structure can be found** [here](docs/ibt_structure.md)
