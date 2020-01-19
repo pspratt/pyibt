@@ -1,5 +1,5 @@
 ## pyibt
-![](https://travis-ci.org/pspratt/pyibt.svg?branch=master)[![](https://img.shields.io/pypi/v/pyibt?color=blue&label=pyibt&logo=python)](https://pypi.org/project/pyibt/)
+![](https://travis-ci.org/pspratt/pyibt.svg?branch=master) [![](https://img.shields.io/pypi/v/pyibt?color=blue&label=pyibt&logo=python)](https://pypi.org/project/pyibt/)
 
 pyibt is a Python module that extends the functionality of the [ECCELES Electrophysiology Suite](https://github.com/pspratt/pyibt/tree/master/docs/ECCELES) with a simple and intuitive API for the analysis and visualization of electrophysiology data in Python.
 
