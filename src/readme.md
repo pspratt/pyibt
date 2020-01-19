@@ -47,18 +47,18 @@ ax1 = ibt.plot_sweep(sweep_num=16, ax=ax1)
 ax2 = fig.add_subplot(212)
 ax2 = ibt.plot_command(sweep_num=16, ax=ax2)
 ```
-![docs/example_plots/single_sweep.png](docs/example_plots/single_sweep.png?raw=true)
+![docs/example_plots/single_sweep.png](https://raw.githubusercontent.com/pspratt/pyibt/master/docs/example_plots/single_sweep.png)
 ```python
 fig = plt.figure(figsize=(5, 5))
 ax=ibt.plot_sweep_phase_plane(sweep_num=16)
 ax.set_xlim(-50, 60)
 ```
-![docs/examples/example_plots/phase_plane.png](docs/example_plots/phase_plane.png?raw=true)
+![docs/examples/example_plots/phase_plane.png](https://raw.githubusercontent.com/pspratt/pyibt/master/docs/example_plots/phase_plane.png)
 ```python
 fig=plt.figure(figsize=(8,5))
 ax=ibt.plot_all_sweeps()
 ```
-![docs/examples/example_plots/all_sweeps.png](docs/example_plots/all_sweeps.png?raw=true)
+![docs/examples/example_plots/all_sweeps.png](https://raw.githubusercontent.com/pspratt/pyibt/master/docs/example_plots/all_sweeps.png)
 ### Get Creative
 ```python
 sweeps = ibt.sweeps[9:25]
@@ -73,7 +73,7 @@ for i, sweep in enumerate(sweeps):
     plt.plot(x, y, color=colors[i], alpha=0.5)
 plt.gca().axis('off')
 ```
-![docs/examples/example_plots/fancy_FI_curve.png](docs/example_plots/fancy_FI_plot.png?raw=true)
+![docs/examples/example_plots/fancy_FI_curve.png](https://raw.githubusercontent.com/pspratt/pyibt/master/docs/example_plots/fancy_FI_plot.png)
 ### Automatic detection of action potentials
 ```Python
 command = 4
@@ -91,7 +91,7 @@ plt.ylabel('Number of Action potentials')
 plt.xlabel('Applied current (pA)')
 plt.savefig('example_plots/FI_curve.png')
 ```
-![docs/examples/example_plots/FI_curve.png](docs/example_plots/FI_curve.png?raw=true)
+![docs/examples/example_plots/FI_curve.png](https://raw.githubusercontent.com/pspratt/pyibt/master/docs/example_plots/FI_curve.png)
 
 ```Python
 import numpy as np
@@ -144,7 +144,7 @@ ax3.set_ylabel('dVdt (V/s)')
 ax3.set_xlabel('AP number')
 ax3.plot(spike_num,spike_dVdt, '-o', markersize=8, color='tab:red')
 ```
-![docs/examples/example_plots/AP_char.png](docs/example_plots/AP_char.png?raw=true)
+![docs/examples/example_plots/AP_char.png](https://raw.githubusercontent.com/pspratt/pyibt/master/docs/example_plots/AP_char.png)
 
 **Details of the ibt file structure can be found** [here](docs/ibt_structure.md)
 
