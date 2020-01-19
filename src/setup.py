@@ -12,7 +12,7 @@ with open(os.path.abspath(PATH_HERE+"/README.md")) as f:
 
 setup(
     name='pyibt',
-    version='0.0.1',
+    version='0.0.2',
     author='Perry Sprat',
     author_email='perrywespratt@gmail.com',
     url='https://github.com/pspratt/pyibt',

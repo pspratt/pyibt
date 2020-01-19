@@ -152,10 +152,7 @@ pyibt was inspired by the [pyABF module written by Scott Harden](https://github.
 
 ### Author
 
-Perry Spratt
-
-PhD Candidate, Bender Lab
-
-University of California, San Francisco
-
+Perry Spratt\
+PhD Candidate, Bender Lab\
+University of California, San Francisco\
 perrywespratt@gmail.com
