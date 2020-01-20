@@ -5,21 +5,20 @@ import matplotlib.pyplot as plt
 class Sweep(object):
 
     """
-    ibt_sweep Class:
-    Object that allows for extracting and interacting with data stored in IBT file sweep headers created by ecceles anaylsis
+    Sweep class:
+    Allows for extracting and interacting with data stored in IBT file sweep headers created by ecceles anaylsis
     """
 
     def __init__(self, ibt_File_Path, sweep_header):
         with open(ibt_File_Path,"rb") as fb:
-            #Check if the file is the correct type using the magic number
+           
             magic_number = int.from_bytes(fb.read(2),byteorder='little',signed=1)
-            if magic_number != 11: #check if the magic number matches ecceles file magic number
+            if magic_number != 11: # check if the magic number matches ecceles file magic number
                 raise Exception("This is not a valid igor sweep file")
 
-            fb.seek(sweep_header) #go next sweep
-            #check if we were sent to the right place
+            fb.seek(sweep_header) # go sweep
             magic_number = int.from_bytes(fb.read(2),byteorder='little')
-            if magic_number != 12:
+            if magic_number != 12:  # check if we were sent to the right place
                 raise Exception("Failed to find sweep")
             self.ibt_File_Path = ibt_File_Path
             self.sweep_num = int.from_bytes(fb.read(2),byteorder='little')
@@ -27,7 +26,6 @@ class Sweep(object):
             self.scale_factor = int.from_bytes(fb.read(4),byteorder='little')
             self.amp_gain = struct.unpack('<f', fb.read(4))[0]
             self.sample_rate = struct.unpack('<f', fb.read(4))[0] * 1000 #specified in kHz. Convert to Hz for clarity
-
             rec_mode = struct.unpack('<f', fb.read(4))[0]
             if rec_mode == 1:
                 self.rec_mode = 'current clamp'
@@ -42,9 +40,8 @@ class Sweep(object):
                 self.y_label = 'Unknown'
                 self.command_label = "Unknown"
             self.x_label = 'Time (seconds)'
-
-            self.dx = 1/self.sample_rate
-            struct.unpack('<f', fb.read(4))[0] #I think this is empty, supposed to be sample rate
+            fb.read(4)  # This is empty, appears in ECCELES to specify dx
+            self.dx = 1/self.sample_rate # calculate dx directly from sample rate
             self.sweep_time = struct.unpack('<f', fb.read(4))[0]
             self.commands = []
             for num in range(5):
@@ -52,18 +49,18 @@ class Sweep(object):
                 command['number'] = num
                 command['flag'] = int.from_bytes(fb.read(4),byteorder='little')
                 command['value'] = struct.unpack('<d', fb.read(8))[0]
-                command['start'] = struct.unpack('<d', fb.read(8))[0]/1000 #sec
-                command['duration'] = struct.unpack('<d', fb.read(8))[0]/1000 #sec
+                command['start'] = struct.unpack('<d', fb.read(8))[0]/1000 # sec
+                command['duration'] = struct.unpack('<d', fb.read(8))[0]/1000 # sec
                 self.commands.append(command)
-
             self.DC_pulse_flag = struct.unpack('<d', fb.read(8))[0]
             self.DC_pulse_value  = struct.unpack('<d', fb.read(8))[0]
             self.temperature = struct.unpack('<f', fb.read(4))[0]
-            fb.read(8) #unspecified Values
+            fb.read(8) # unspecified Values
             self.sweep_data_pointer = int.from_bytes(fb.read(4),byteorder='little')
 
     """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-    Data Extraction Methods """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+    Data Extraction Methods 
+    """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
     def time2index(self, time):
         t = self.time
         if time < 0:
@@ -84,16 +81,16 @@ class Sweep(object):
     @property
     def time(self):
         sigfigs = int(np.floor(np.log10(1/self.dx)))+1
-        time = np.round(np.asarray(range(0,self.num_points))*self.dx,sigfigs)
+        time = np.round(np.asarray(range(0,self.num_points))*self.dx,sigfigs) # round to avoid floating point errors
         return time
-        """
-        Note: rounding is to avoid floating errors
-        """
 
     def get_time(self, start=0, duration=None, absolute=True):
-        if duration is None:
-            duration = []
-        start_pnt, num_pnts = self.convert_start_and_duration(start,duration)
+        """
+        start is time in seconds
+        duration is time in seconds
+        if duration is not specified, time is returned until the end of the sweep is reached
+        """
+        start_pnt, num_pnts = self.convert_start_and_duration_to_indices(start,duration)
         time = self.time[start_pnt:start_pnt+num_pnts]
         if not absolute:
             time = time-time[0]
@@ -104,9 +101,12 @@ class Sweep(object):
         return self.get_data()
 
     def get_data(self, start=0, duration=None):
-        if duration is None:
-            duration = []
-        start_pnt, num_pnts = self.convert_start_and_duration(start,duration)
+        """
+        start is time in seconds
+        duration is time in seconds
+        if duration is not specified, data is returned until the end of the sweep is reached
+        """
+        start_pnt, num_pnts = self.convert_start_and_duration_to_indices(start,duration)
         with open(self.ibt_File_Path,"rb") as fb:
             fb.seek(self.sweep_data_pointer) #go to sweep data
             magic_number = int.from_bytes(fb.read(2),byteorder='little')
@@ -115,7 +115,7 @@ class Sweep(object):
             else:
                 fb.seek(self.sweep_data_pointer+2 + start_pnt*2)
                 data = []
-                for i in range(num_pnts):
+                for _ in range(num_pnts):
                     data.append((int.from_bytes(fb.read(2),byteorder='little',signed=1)/
                                    self.scale_factor/self.amp_gain)*1000)
                 return np.asarray(data)
@@ -125,9 +125,12 @@ class Sweep(object):
         return self.get_command()
 
     def get_command(self, start=0, duration=None):
-        if duration is None:
-            duration = []
-        start_pnt, num_pnts = self.convert_start_and_duration(start,duration)
+        """
+        start is time in seconds
+        duration is time in seconds
+        if duration is not specified, the command vector is returned until the end of the sweep is reached
+        """
+        start_pnt, num_pnts = self.convert_start_and_duration_to_indices(start,duration)
         comm = np.zeros(shape=(self.num_points,))
         for command in self.commands:
             if command['flag']:
@@ -142,17 +145,16 @@ class Sweep(object):
         return self.get_dVdt()
 
     def get_dVdt(self, start=0, duration=None):
-        if duration is None:
-            duration = []
-        start_pnt, num_pnts = self.convert_start_and_duration(start,duration)
-        return np.gradient(self.data,self.time)/1e3
+        start_pnt, num_pnts = self.convert_start_and_duration_to_indices(start,duration)
+        dVdt = np.gradient(self.data, self.time)/1e3
+        return dVdt[start_pnt, num_pnts]
 
-    def convert_start_and_duration(self, start, duration):
-        if not duration: #if no duration specified, set for length of sweep
-            num_pnts = self.num_points
+    def convert_start_and_duration_to_indices(self, start, duration):
+        start_pnt = self.time2index(start)
+        if duration is None: #if no duration specified, set for length of sweep
+            num_pnts = self.num_points - start_pnt
         else:
             num_pnts = self.time2index(duration)
-        start_pnt = self.time2index(start)
 
         #Ensure requested points are within the limits of the sweep
         if num_pnts < 1:
@@ -316,14 +318,14 @@ class Sweep(object):
 
         return ax
 
-    def plot_spike(spike_properties, ax=None):
-        if ax == None:
-            ax = plt.gca()
+def plot_spike(spike_properties, ax=None):
+    if ax == None:
+        ax = plt.gca()
 
-        ax.plot(spike_properties['time']-spike_properties['time'][0],spike_properties['Vm'])
-        ax.set_xlabel('Time (seconds)')
-        ax.set_ylabel('Membrane Potential (mV)')
-        return ax
+    ax.plot(spike_properties['time']-spike_properties['time'][0],spike_properties['Vm'])
+    ax.set_xlabel('Time (seconds)')
+    ax.set_ylabel('Membrane Potential (mV)')
+    return ax
 
 def calc_Rin(mV_pre, mV_post, pA_pre, pA_post):
     #Return value is in Mohm
